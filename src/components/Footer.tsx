@@ -27,8 +27,13 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/categories" className="text-gray-500 hover:text-primary transition-colors">
-                  Categories
+                <Link to="/cart" className="text-gray-500 hover:text-primary transition-colors">
+                  Cart
+                </Link>
+              </li>
+              <li>
+                <Link to="/wishlist" className="text-gray-500 hover:text-primary transition-colors">
+                  Wishlist
                 </Link>
               </li>
             </ul>
@@ -38,22 +43,27 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold text-accent">Categories</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/category/electronics" className="text-gray-500 hover:text-primary transition-colors">
-                  Electronics
+                <Link to="/products?category=fragrances" className="text-gray-500 hover:text-primary transition-colors">
+                  Fragrances
                 </Link>
               </li>
               <li>
-                <Link to="/category/fashion" className="text-gray-500 hover:text-primary transition-colors">
-                  Fashion
+                <Link to="/products?category=beauty" className="text-gray-500 hover:text-primary transition-colors">
+                  Beauty
                 </Link>
               </li>
               <li>
-                <Link to="/category/home" className="text-gray-500 hover:text-primary transition-colors">
-                  Home & Living
+                <Link to="/products?category=furniture" className="text-gray-500 hover:text-primary transition-colors">
+                  Furniture
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=groceries" className="text-gray-500 hover:text-primary transition-colors">
+                  Groceries
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> 
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-accent">Contact</h3>
@@ -64,6 +74,8 @@ const Footer: React.FC = () => {
             </ul>
           </div>
         </div>
+        
+       
       </div>
     </footer>
   )

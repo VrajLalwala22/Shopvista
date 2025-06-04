@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getProducts, searchProducts, getProductsByCategory } from '../services/api'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 interface Product {
@@ -16,24 +16,38 @@ interface Product {
 }
 
 const Products: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '')
   const [categories, setCategories] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const { addToCart } = useCart()
 
-
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const result = await getProducts()
-        setProducts(result.products)
+        const categoryFromUrl = searchParams.get('category')
+        const searchFromUrl = searchParams.get('search')
+
+        if (searchFromUrl) {
+          const result = await searchProducts(searchFromUrl)
+          setProducts(result.products)
+          setSearchQuery(searchFromUrl)
+        } else if (categoryFromUrl) {
+          const result = await getProductsByCategory(categoryFromUrl)
+          setProducts(result.products)
+          setSelectedCategory(categoryFromUrl)
+        } else {
+          const result = await getProducts()
+          setProducts(result.products)
+        }
         
+        const allProducts = await getProducts()
         const uniqueCategories = Array.from(
-          new Set(result.products.map(product => product.category))
+          new Set(allProducts.products.map(product => product.category))
         )
         setCategories(uniqueCategories)
       } catch (err) {
@@ -44,82 +58,50 @@ const Products: React.FC = () => {
     }
 
     fetchInitialData()
-  }, [])
+  }, [searchParams])
 
-  
-  useEffect(() => {
-    const searchTimeout = setTimeout(async () => {
-      if (searchQuery) {
-        try {
-          setLoading(true)
-          const result = await searchProducts(searchQuery)
-          setProducts(result.products)
-        } catch (err) {
-          setError('Failed to search products')
-        } finally {
-          setLoading(false)
-        }
-      } else if (!selectedCategory) {
-        
-        const fetchProducts = async () => {
-          try {
-            setLoading(true)
-            const result = await getProducts()
-            setProducts(result.products)
-          } catch (err) {
-            setError('Failed to fetch products')
-          } finally {
-            setLoading(false)
-          }
-        }
-        fetchProducts()
-      }
-    }, 500) 
-
-    return () => clearTimeout(searchTimeout)
-  }, [searchQuery])
-
-  
-  useEffect(() => {
-    const fetchFilteredProducts = async () => {
-      if (selectedCategory) {
-        try {
-          setLoading(true)
-          const result = await getProductsByCategory(selectedCategory)
-          setProducts(result.products)
-        } catch (err) {
-          setError('Failed to fetch products for selected category')
-        } finally {
-          setLoading(false)
-        }
-      }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value
+    setSearchQuery(query)
+    
+    if (query) {
+      setSearchParams({ search: query })
+    } else {
+      setSearchParams({})
     }
+  }
 
-    fetchFilteredProducts()
-  }, [selectedCategory])
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category)
+    setSearchQuery('')
+    if (category) {
+      setSearchParams({ category })
+    } else {
+      setSearchParams({})
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-       
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex-1 max-w-xl relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5 text-white" />
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
             </div>
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search products..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm text-white placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white hover:bg-primary-light transition-colors rounded-md"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-colors rounded-md"
             >
               <FunnelIcon className="h-5 w-5" />
               Filters
@@ -127,17 +109,16 @@ const Products: React.FC = () => {
           </div>
         </div>
 
-        
         {showFilters && (
           <div className="mb-8 p-4 bg-white rounded-lg shadow-sm">
-            <h3 className="text-lg font-medium text-accent mb-4">Categories</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Categories</h3>
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => setSelectedCategory('')}
+                onClick={() => handleCategorySelect('')}
                 className={`px-4 py-2 rounded-full text-sm font-medium ${
                   !selectedCategory
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 } transition-colors`}
               >
                 All
@@ -145,11 +126,11 @@ const Products: React.FC = () => {
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleCategorySelect(category)}
                   className={`px-4 py-2 rounded-full text-sm font-medium ${
                     selectedCategory === category
                       ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   } transition-colors`}
                 >
                   {category}
@@ -159,20 +140,17 @@ const Products: React.FC = () => {
           </div>
         )}
 
-       
         {error && (
           <div className="bg-red-100 text-red-600 p-4 rounded-md mb-8">
             {error}
           </div>
         )}
 
-        
         {loading ? (
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-       
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
               <div
@@ -180,40 +158,40 @@ const Products: React.FC = () => {
                 className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
               >
                 <Link to={`/product/${product.id}`} className="block">
-                  <div className="aspect-w-3 aspect-h-2 bg-gray-200">
+                  <div className="relative pt-[75%] bg-gray-200">
                     <img
                       src={product.thumbnail}
                       alt={product.title}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-medium text-accent mb-1 truncate">
+                    <h3 className="text-lg font-medium text-gray-900 mb-1 truncate hover:text-primary transition-colors">
                       {product.title}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-medium text-accent">
-                        ${product.price}
+                      <span className="text-lg font-medium text-primary">
+                        ₹{product.price}
                       </span>
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          addToCart(product)
-                        }}
-                        className="px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary-light transition-colors"
-                      >
-                        Add to Cart
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">
+                          Rating: {product.rating}★
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{product.brand}</span>
-                      <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
-                        {product.rating}★
-                      </span>
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        addToCart(product, 1)
+                      }}
+                      className="mt-4 w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark transition-colors"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </Link>
               </div>

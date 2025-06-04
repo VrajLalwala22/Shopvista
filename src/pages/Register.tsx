@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerUser } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { addRegisteredUser, isUsernameTaken } from '../services/auth';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -28,9 +30,32 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await registerUser(formData);
-      // After successful registration, redirect to login
-      navigate('/login');
+      // Check if username is already taken
+      if (isUsernameTaken(formData.username)) {
+        throw new Error('Username is already taken');
+      }
+
+      // Create new user object
+      const newUser = {
+        id: Date.now(), // Generate a unique ID
+        ...formData
+      };
+
+      // Store user in localStorage
+      addRegisteredUser(newUser);
+      
+      // Log the user in
+      login({
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        token: `token_${newUser.id}` // Generate a simple token
+      });
+
+      // After successful registration and login, redirect to home
+      navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {

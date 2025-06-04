@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
+import { HeartIcon } from '@heroicons/react/24/outline'
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 
 interface Product {
   id: number
@@ -17,6 +20,7 @@ interface Product {
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const { addToCart } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   const [product, setProduct] = useState<Product | null>(null)
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [quantity, setQuantity] = useState(1)
@@ -49,32 +53,45 @@ const ProductDetail: React.FC = () => {
     addToCart(product, quantity)
   }
 
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id)
+    } else {
+      addToWishlist(product)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="aspect-w-1 aspect-h-1 w-full">
-            <img
-              src={selectedImage}
-              alt={product.title}
-              className="w-full h-96 object-cover rounded-lg"
-            />
+          <div className="relative rounded-lg overflow-hidden bg-gray-100">
+            <div className="relative pt-[100%]">
+              <img
+                src={selectedImage}
+                alt={product.title}
+                className="absolute inset-0 w-full h-full object-contain p-4"
+              />
+            </div>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {product.images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(image)}
-                className={`border-2 rounded-md overflow-hidden ${
-                  selectedImage === image ? 'border-primary' : 'border-transparent'
+                className={`relative overflow-hidden rounded-lg bg-gray-100 ${
+                  selectedImage === image ? 'ring-2 ring-primary' : ''
                 }`}
               >
-                <img
-                  src={image}
-                  alt={`${product.title} ${index + 1}`}
-                  className="w-full h-20 object-cover"
-                />
+                <div className="relative pt-[100%]">
+                  <img
+                    src={image}
+                    alt={`${product.title} ${index + 1}`}
+                    className="absolute inset-0 w-full h-full object-contain p-2"
+                    loading="lazy"
+                  />
+                </div>
               </button>
             ))}
           </div>
@@ -82,9 +99,22 @@ const ProductDetail: React.FC = () => {
 
         {/* Product Info */}
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-            <p className="text-lg text-gray-500">{product.brand}</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
+              <p className="text-lg text-gray-500">{product.brand}</p>
+            </div>
+            <button
+              onClick={handleWishlistToggle}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+            >
+              {isInWishlist(product.id) ? (
+                <HeartSolidIcon className="h-6 w-6 text-red-500" />
+              ) : (
+                <HeartIcon className="h-6 w-6 text-gray-400 hover:text-red-500" />
+              )}
+            </button>
           </div>
 
           <div className="space-y-2">

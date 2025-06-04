@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { findRegisteredUser } from '../services/auth'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
-    username: 'vraj',
-    password: 'vraj',
+    username: '',
+    password: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -24,22 +27,29 @@ const Login = () => {
     setLoading(true)
 
     try {
-      const response = await fetch('https://dummyjson.com/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      })
+      // Find user with matching credentials
+      const user = findRegisteredUser(formData.username, formData.password)
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Invalid username or password')
+      if (!user) {
+        throw new Error('Invalid username or password')
       }
 
-      localStorage.setItem('token', data.token)
+      // Generate token
+      const token = `token_${user.id}`
+
+      // Store token in localStorage
+      localStorage.setItem('token', token)
+      
+      // Log the user in using the auth context
+      login({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        token
+      })
+
       navigate('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please register if you haven\'t already.')
