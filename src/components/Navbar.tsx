@@ -1,8 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingBagIcon, UserIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { useCart } from '../context/CartContext'
 
 const Navbar: React.FC = () => {
+  const { getItemCount } = useCart()
+  
   return (
     <nav className="w-full bg-secondary shadow-sm sticky top-0 z-50">
       <div className="max-w-[1200px] mx-auto px-4">
@@ -33,7 +36,7 @@ const Navbar: React.FC = () => {
             >
               <ShoppingBagIcon className="h-6 w-6" />
               <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                0
+                {getItemCount()}
               </span>
             </Link>
             <Link

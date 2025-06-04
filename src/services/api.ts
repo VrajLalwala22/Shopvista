@@ -7,7 +7,7 @@ interface Product {
   thumbnail: string;
   brand: string;
   rating: number;
-  [key: string]: any; // for other properties from the API
+  [key: string]: any; 
 }
 
 interface LoginResponse {
@@ -31,35 +31,40 @@ interface RegisterResponse {
 
 const BASE_URL = 'https://dummyjson.com';
 
-// Fetch all products
+
 export const getProducts = async (): Promise<{ products: Product[] }> => {
   const res = await fetch(`${BASE_URL}/products`);
   if (!res.ok) throw new Error('Failed to fetch products');
   return res.json();
 };
 
-// Fetch single product by ID
+
 export const getProductById = async (id: number): Promise<Product> => {
-  const res = await fetch(`${BASE_URL}/products/${id}`);
-  if (!res.ok) throw new Error(`Failed to fetch product with id ${id}`);
-  return res.json();
+  try {
+    const response = await fetch(`${BASE_URL}/products/${id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch product');
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error('Failed to fetch product');
+  }
 };
 
-// Search products
+
 export const searchProducts = async (query: string): Promise<{ products: Product[] }> => {
   const res = await fetch(`${BASE_URL}/products/search?q=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('Failed to search products');
   return res.json();
 };
 
-// Get products by category
+
 export const getProductsByCategory = async (category: string): Promise<{ products: Product[] }> => {
   const res = await fetch(`${BASE_URL}/products/category/${encodeURIComponent(category)}`);
   if (!res.ok) throw new Error(`Failed to fetch products in category ${category}`);
   return res.json();
 };
 
-// Login simulation
 export const loginUser = async (username: string, password: string): Promise<LoginResponse> => {
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
@@ -75,7 +80,6 @@ export const loginUser = async (username: string, password: string): Promise<Log
   return res.json();
 };
 
-// Register new user
 export const registerUser = async (userData: {
   username: string;
   password: string;

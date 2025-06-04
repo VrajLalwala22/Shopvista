@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { getProducts, searchProducts, getProductsByCategory } from '../services/api'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 
 interface Product {
   id: number
@@ -21,6 +23,7 @@ const Products: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [categories, setCategories] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const { addToCart } = useCart()
 
 
   useEffect(() => {
@@ -176,35 +179,43 @@ const Products: React.FC = () => {
                 key={product.id}
                 className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
               >
-                <div className="aspect-w-3 aspect-h-2 bg-gray-200">
-                  <img
-                    src={product.thumbnail}
-                    alt={product.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-medium text-accent mb-1 truncate">
-                    {product.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2 line-clamp-2">
-                    {product.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-medium text-accent">
-                      ${product.price}
-                    </span>
-                    <button className="px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary-light transition-colors">
-                      Add to Cart
-                    </button>
+                <Link to={`/product/${product.id}`} className="block">
+                  <div className="aspect-w-3 aspect-h-2 bg-gray-200">
+                    <img
+                      src={product.thumbnail}
+                      alt={product.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-xs text-gray-500">{product.brand}</span>
-                    <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
-                      {product.rating}★
-                    </span>
+                  <div className="p-4">
+                    <h3 className="text-lg font-medium text-accent mb-1 truncate">
+                      {product.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                      {product.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-medium text-accent">
+                        ${product.price}
+                      </span>
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault()
+                          addToCart(product)
+                        }}
+                        className="px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary-light transition-colors"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-gray-500">{product.brand}</span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                        {product.rating}★
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             ))}
           </div>
