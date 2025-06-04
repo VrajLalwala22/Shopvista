@@ -5,6 +5,7 @@ import Footer from './components/Footer.tsx'
 import Home from './pages/Home.tsx'
 import Login from './pages/Login.tsx'
 import Register from './pages/Register.tsx'
+import Products from './pages/Products.tsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <main className="flex-1 w-full">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

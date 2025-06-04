@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm text-white placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               />
             </div>
           </div>
@@ -56,7 +56,7 @@ const Navbar: React.FC = () => {
             <input
               type="text"
               placeholder="Search products..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white text-white placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm"
             />
           </div>
         </div>

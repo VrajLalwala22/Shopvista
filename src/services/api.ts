@@ -4,6 +4,9 @@ interface Product {
   description: string;
   price: number;
   category: string;
+  thumbnail: string;
+  brand: string;
+  rating: number;
   [key: string]: any; // for other properties from the API
 }
 
