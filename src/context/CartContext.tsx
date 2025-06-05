@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { Product } from '../types/Product'
 
 interface CartItem {
   id: number
@@ -10,7 +11,7 @@ interface CartItem {
 
 interface CartContextType {
   items: CartItem[]
-  addToCart: (product: any, quantity?: number) => void
+  addToCart: (product: Product, quantity?: number) => void
   removeFromCart: (productId: number) => void
   updateQuantity: (productId: number, quantity: number) => void
   clearCart: () => void
@@ -30,17 +31,15 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
-    // Load cart from localStorage on initial render
     const savedCart = localStorage.getItem('cart')
     return savedCart ? JSON.parse(savedCart) : []
   })
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(items))
   }, [items])
 
-  const addToCart = (product: any, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1) => {
     setItems(currentItems => {
       const existingItem = currentItems.find(item => item.id === product.id)
       
@@ -55,7 +54,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return [...currentItems, {
         id: product.id,
         title: product.title,
-        price: product.price,
+        price: Math.round(product.price),
         quantity: quantity,
         thumbnail: product.thumbnail
       }]

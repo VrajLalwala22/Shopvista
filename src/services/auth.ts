@@ -1,4 +1,3 @@
-// Static credentials for login
 const STATIC_USER = {
   id: 1,
   username: 'admin',

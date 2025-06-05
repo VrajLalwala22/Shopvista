@@ -1,52 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-interface Product {
-  id: number
-  title: string
-  description: string
-  price: number
-  thumbnail: string
-  category: string
-}
-
-const categories = [
-  {
-    name: 'Fragrances',
-    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    description: 'Luxury perfumes and fragrances',
-    category: 'fragrances'
-  },
-  {
-    name: 'Beauty',
-    image: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    description: 'Premium beauty and skincare products',
-    category: 'beauty'
-  },
-  {
-    name: 'Furniture',
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    description: 'Modern home furniture',
-    category: 'furniture'
-  },
-  {
-    name: 'Groceries',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    description: 'Fresh and packaged groceries',
-    category: 'groceries'
-  }
-]
+import { useCart } from '../context/CartContext'
+import { Product } from '../types/Product'
+import { categories } from '../types/Category'
+import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const { addToCart } = useCart()
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
         const response = await fetch('https://dummyjson.com/products?limit=3')
         const data = await response.json()
-        setFeaturedProducts(data.products)
+        const formattedProducts: Product[] = data.products.map((p: any) => ({
+          ...p,
+          createdAt: new Date().toISOString(),
+          images: p.images || [],
+          stock: p.stock || 0
+        }))
+        setFeaturedProducts(formattedProducts)
       } catch (error) {
         console.error('Failed to fetch featured products:', error)
       } finally {
@@ -57,9 +32,14 @@ const Home: React.FC = () => {
     fetchFeaturedProducts()
   }, [])
 
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault() 
+    addToCart(product, 1)
+  }
+
   return (
     <div className="w-full overflow-x-hidden">
-      
+      {/* Hero Section */}
       <section className="w-full bg-primary py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -81,37 +61,53 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Categories Section */}
       <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-accent sm:text-3xl mb-8">
-            Featured Categories
+            Shop by Category
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category) => (
-              <Link
-                key={category.name}
-                to={`/products?category=${category.category}`}
-                className="group relative bg-secondary rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="aspect-w-3 aspect-h-2">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div className="text-center">
-                      <h3 className="text-xl font-semibold text-white">{category.name}</h3>
-                      <p className="text-sm text-gray-200 mt-2">{category.description}</p>
-                    </div>
+              <div key={category.id} className="group bg-white rounded-lg shadow-sm overflow-hidden">
+                <Link to={`/products?category=${category.id}`} className="block">
+                  <div className="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+                    />
                   </div>
-                </div>
-              </Link>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                      {category.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {category.description}
+                    </p>
+                    {category.subcategories && (
+                      <div className="mt-4 space-y-2">
+                        {category.subcategories.map((sub) => (
+                          <Link
+                            key={sub.id}
+                            to={`/products?category=${sub.id}`}
+                            className="flex items-center text-sm text-gray-600 hover:text-primary"
+                          >
+                            <ChevronRightIcon className="h-4 w-4 mr-1" />
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Featured Products Section */}
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-accent sm:text-3xl mb-8">
@@ -146,12 +142,9 @@ const Home: React.FC = () => {
                       {product.description}
                     </p>
                     <div className="mt-4 flex items-center justify-between">
-                      <span className="text-lg font-medium text-accent">₹{product.price}</span>
+                      <span className="text-lg font-medium text-accent">₹{Math.round(product.price)}</span>
                       <button 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          // Add to cart functionality can be implemented here
-                        }}
+                        onClick={(e) => handleAddToCart(e, product)}
                         className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-colors"
                       >
                         Add to Cart

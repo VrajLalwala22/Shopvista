@@ -29,11 +29,9 @@ const Checkout: React.FC = () => {
     phone: ''
   });
 
-  // Calculate order summary
   const subtotal = getCartTotal();
-  const shipping = 50; // Fixed shipping cost
-  const tax = subtotal * 0.18; // 18% tax
-  const total = subtotal + shipping + tax;
+  const shipping = 50;
+  const total = subtotal + shipping;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,26 +46,21 @@ const Checkout: React.FC = () => {
     setLoading(true);
 
     try {
-      // Simulate order processing
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Store order details in localStorage for the success page
       const orderDetails = {
         orderId: `ORD${Date.now()}`,
         items,
         shippingDetails,
         subtotal,
         shipping,
-        tax,
         total,
         orderDate: new Date().toISOString()
       };
       localStorage.setItem('lastOrder', JSON.stringify(orderDetails));
       
-      // Clear the cart
       clearCart();
       
-      // Redirect to success page
       navigate('/order-success');
     } catch (error) {
       console.error('Error processing order:', error);
@@ -86,7 +79,7 @@ const Checkout: React.FC = () => {
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Shipping Details Form */}
+        
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Shipping Details</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -213,7 +206,7 @@ const Checkout: React.FC = () => {
           </form>
         </div>
 
-        {/* Order Summary */}
+        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
           <div className="space-y-4">
@@ -243,10 +236,7 @@ const Checkout: React.FC = () => {
                 <span>Shipping</span>
                 <span>₹{shipping.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>Tax (18%)</span>
-                <span>₹{tax.toFixed(2)}</span>
-              </div>
+            
               <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                 <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>

@@ -22,7 +22,6 @@ interface OrderDetails {
   };
   subtotal: number;
   shipping: number;
-  tax: number;
   total: number;
   orderDate: string;
 }
@@ -128,10 +127,6 @@ const OrderSuccess: React.FC = () => {
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
                   <span>₹{orderDetails.shipping.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Tax</span>
-                  <span>₹{orderDetails.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                   <span>Total</span>

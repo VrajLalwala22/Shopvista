@@ -4,18 +4,7 @@ import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { HeartIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
-
-interface Product {
-  id: number
-  title: string
-  description: string
-  price: number
-  thumbnail: string
-  images: string[]
-  brand: string
-  category: string
-  stock: number
-}
+import { Product } from '../types/Product'
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -26,12 +15,14 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
-    // Fetch product details
     const fetchProduct = async () => {
       try {
         const response = await fetch(`https://dummyjson.com/products/${id}`)
         const data = await response.json()
-        setProduct(data)
+        setProduct({
+          ...data,
+          createdAt: new Date().toISOString() // Since the API doesn't provide this
+        })
         setSelectedImage(data.thumbnail)
       } catch (error) {
         console.error('Error fetching product:', error)
@@ -64,7 +55,7 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Product Images */}
+       
         <div className="space-y-4">
           <div className="relative rounded-lg overflow-hidden bg-gray-100">
             <div className="relative pt-[100%]">
@@ -97,7 +88,7 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Product Info */}
+        
         <div className="space-y-6">
           <div className="flex justify-between items-start">
             <div>
@@ -118,7 +109,7 @@ const ProductDetail: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <p className="text-4xl font-bold text-primary">₹{product.price}</p>
+            <p className="text-4xl font-bold text-primary">₹{Math.round(product.price)}</p>
             <p className="text-sm text-gray-500">
               Stock: {product.stock} units available
             </p>
@@ -129,7 +120,7 @@ const ProductDetail: React.FC = () => {
             <p className="text-gray-600">{product.description}</p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center space-x-4">
               <label htmlFor="quantity" className="text-gray-700">
                 Quantity:
@@ -143,7 +134,7 @@ const ProductDetail: React.FC = () => {
                 </button>
                 <span className="px-3 py-1">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   className="px-3 py-1 hover:bg-gray-100"
                 >
                   +

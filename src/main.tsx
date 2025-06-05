@@ -9,7 +9,7 @@ if (!root) {
   throw new Error('Root element not found')
 }
 
-// Add error logging
+
 const renderApp = () => {
   try {
     console.log('Starting to render app...')

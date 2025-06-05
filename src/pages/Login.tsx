@@ -27,20 +27,20 @@ const Login = () => {
     setLoading(true)
 
     try {
-      // Validate credentials
+      
       const user = validateCredentials(formData.username, formData.password)
 
       if (!user) {
         throw new Error('Invalid username or password')
       }
 
-      // Generate token
+      
       const token = `token_${user.id}`
 
-      // Store token in localStorage
+      
       localStorage.setItem('token', token)
       
-      // Log the user in using the auth context
+      
       login({
         ...user,
         token

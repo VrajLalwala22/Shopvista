@@ -7,6 +7,8 @@ interface User {
   firstName: string;
   lastName: string;
   token: string;
+  phone?: string;
+  location?: string;
 }
 
 interface AuthContextType {

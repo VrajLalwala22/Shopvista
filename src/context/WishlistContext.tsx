@@ -1,15 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-
-interface WishlistItem {
-  id: number
-  title: string
-  price: number
-  thumbnail: string
-}
+import { Product } from '../types/Product'
 
 interface WishlistContextType {
-  items: WishlistItem[]
-  addToWishlist: (product: any) => void
+  items: Product[]
+  addToWishlist: (product: Product) => void
   removeFromWishlist: (productId: number) => void
   isInWishlist: (productId: number) => boolean
 }
@@ -25,29 +19,21 @@ export const useWishlist = () => {
 }
 
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<WishlistItem[]>(() => {
-    // Load wishlist from localStorage on initial render
+  const [items, setItems] = useState<Product[]>(() => {
     const savedWishlist = localStorage.getItem('wishlist')
     return savedWishlist ? JSON.parse(savedWishlist) : []
   })
 
-  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(items))
   }, [items])
 
-  const addToWishlist = (product: any) => {
+  const addToWishlist = (product: Product) => {
     setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === product.id)
-      if (existingItem) {
+      if (currentItems.some(item => item.id === product.id)) {
         return currentItems
       }
-      return [...currentItems, {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        thumbnail: product.thumbnail
-      }]
+      return [...currentItems, product]
     })
   }
 

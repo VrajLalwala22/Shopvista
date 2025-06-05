@@ -9,9 +9,8 @@ const Cart: React.FC = () => {
   const { user } = useAuth()
 
   const subtotal = getCartTotal()
-  const shipping = items.length > 0 ? 50 : 0 // Fixed shipping cost
-  const tax = subtotal * 0.18 // 18% tax
-  const total = subtotal + shipping + tax
+  const shipping = items.length > 0 ? 50 : 0 
+  const total = subtotal + shipping
 
   const handleCheckout = () => {
     if (!user) {
@@ -100,10 +99,6 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
                   <span>₹{shipping.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Tax (18%)</span>
-                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between font-semibold">
