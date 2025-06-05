@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
               )}
             </button>
             <Link to="/" className="flex items-center ml-2 md:ml-0">
-              <span className="text-xl font-bold text-accent hover:text-accent-light transition-colors">
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:scale-105 transform transition-transform duration-200">
                 ShopVista
               </span>
             </Link>

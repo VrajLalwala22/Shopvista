@@ -2,36 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  Box,
-  Container,
-  Grid as MuiGrid,
-  Paper,
-  Typography,
-  Avatar,
-  Button,
-  TextField,
-  Divider,
-  Stack,
-  Chip,
-  Table,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableRow,
-} from '@mui/material';
-import {
-  Edit as EditIcon,
-  LocationOn,
-  Email,
-  Phone,
-  ShoppingBag,
-  Favorite,
-  Star,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
-} from '@mui/icons-material';
-
-const Grid = MuiGrid as any; 
+  ShoppingBagIcon,
+  HeartIcon,
+  StarIcon,
+  PencilIcon,
+  XMarkIcon,
+  CheckIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon
+} from '@heroicons/react/24/outline';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -43,7 +23,6 @@ const Profile: React.FC = () => {
     location: '',
   });
 
-  
   const recentOrders = [
     { id: 1, date: '2024-03-15', status: 'Delivered', total: 299 },
     { id: 2, date: '2024-03-10', status: 'In Transit', total: 149 },
@@ -51,19 +30,10 @@ const Profile: React.FC = () => {
   ];
 
   const stats = [
-    { label: 'Orders', value: 12, icon: <ShoppingBag /> },
-    { label: 'Wishlist', value: 5, icon: <Favorite /> },
-    { label: 'Reviews', value: 8, icon: <Star /> },
+    { label: 'Orders', value: 12, icon: <ShoppingBagIcon className="w-6 h-6" /> },
+    { label: 'Wishlist', value: 5, icon: <HeartIcon className="w-6 h-6" /> },
+    { label: 'Reviews', value: 8, icon: <StarIcon className="w-6 h-6" /> },
   ];
-
-  
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   useEffect(() => {
     if (!user) {
@@ -103,200 +73,184 @@ const Profile: React.FC = () => {
     return null;
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Delivered':
-        return 'success';
-      case 'In Transit':
-        return 'primary';
-      default:
-        return 'default';
-    }
-  };
-
   return (
-    <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
-      {/* Header Section */}
-      <Paper 
-        elevation={0}
-        sx={{ 
-          p: { xs: 2, sm: 4 }, 
-          mb: { xs: 2, sm: 3 }, 
-          background: 'linear-gradient(to right, #2196f3, #1976d2)',
-          color: 'white'
-        }}
-      >
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm="auto">
-            <Box display="flex" justifyContent={{ xs: "center", sm: "flex-start" }}>
-              <Avatar
-                sx={{
-                  width: { xs: 80, sm: 120 },
-                  height: { xs: 80, sm: 120 },
-                  bgcolor: 'white',
-                  color: 'primary.main',
-                  fontSize: { xs: '2rem', sm: '3rem' },
-                  border: '4px solid white',
-                }}
-              >
-                {user.firstName[0]}{user.lastName[0]}
-              </Avatar>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm>
-            <Box textAlign={{ xs: "center", sm: "left" }}>
-              <Typography variant="h4" sx={{ mb: 1, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
-                {user.firstName} {user.lastName}
-              </Typography>
-              <Typography variant="subtitle1">
-                @{user.username}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section with animated background */}
+      <section className="relative w-full py-20 overflow-hidden">
+        {/* Background with gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80 mix-blend-multiply"></div>
+        
+        {/* Animated background patterns */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="relative container mx-auto px-4">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-32 h-32 rounded-full bg-white shadow-xl mb-6 flex items-center justify-center text-primary text-4xl font-bold">
+              {user.firstName[0]}{user.lastName[0]}
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">{user.firstName} {user.lastName}</h1>
+            <p className="text-gray-100 text-lg">@{user.username}</p>
+          </div>
+        </div>
+      </section>
 
       {/* Stats Section */}
-      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 } }}>
-        {stats.map((stat) => (
-          <Grid item xs={12} sm={6} md={4} key={stat.label}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 2, sm: 3 },
-                textAlign: 'center',
-                bgcolor: 'background.default',
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Box sx={{ color: 'primary.main', mb: 1 }}>
-                {stat.icon}
-              </Box>
-              <Typography variant="h4" sx={{ mb: 1, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
-                {stat.value}
-              </Typography>
-              <Typography color="textSecondary">
-                {stat.label}
-              </Typography>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+      <section className="relative -mt-8">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <div className="text-primary">
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <span className="text-3xl font-bold text-gray-900">{stat.value}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">{stat.label}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Profile Info Section */}
-      <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h6">Profile Information</Typography>
-          <Button
-            startIcon={editMode ? <CancelIcon /> : <EditIcon />}
-            onClick={handleEditToggle}
-            color={editMode ? 'error' : 'primary'}
-            size="small"
-          >
-            {editMode ? 'Cancel' : 'Edit'}
-          </Button>
-        </Box>
+      {/* Profile Information Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
+              <button
+                onClick={handleEditToggle}
+                className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+              >
+                {editMode ? (
+                  <>
+                    <XMarkIcon className="w-5 h-5 mr-2" />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <PencilIcon className="w-5 h-5 mr-2" />
+                    Edit Profile
+                  </>
+                )}
+              </button>
+            </div>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Email"
-              value={profileData.email}
-              onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-              disabled={!editMode}
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <Email sx={{ color: 'action.active', mr: 1 }} />
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Phone"
-              value={profileData.phone}
-              onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-              disabled={!editMode}
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <Phone sx={{ color: 'action.active', mr: 1 }} />
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Location"
-              value={profileData.location}
-              onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-              disabled={!editMode}
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <LocationOn sx={{ color: 'action.active', mr: 1 }} />
-                ),
-              }}
-            />
-          </Grid>
-        </Grid>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                      disabled={!editMode}
+                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
 
-        {editMode && (
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              variant="contained"
-              color="primary"
-            >
-              Save Changes
-            </Button>
-          </Box>
-        )}
-      </Paper>
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <PhoneIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="tel"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                      disabled={!editMode}
+                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Location</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPinIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={profileData.location}
+                      onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
+                      disabled={!editMode}
+                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {editMode && (
+                <div className="flex justify-end mt-6">
+                  <button
+                    onClick={handleSave}
+                    className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                  >
+                    <CheckIcon className="w-5 h-5 mr-2" />
+                    Save Changes
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Recent Orders Section */}
-      <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 } }}>
-        <Typography variant="h6" sx={{ mb: 3 }}>Recent Orders</Typography>
-        <Box sx={{ overflowX: 'auto' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Order ID</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {recentOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>#{order.id}</TableCell>
-                  <TableCell>
-                    {new Date(order.date).toLocaleDateString('en-IN')}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={order.status}
-                      color={getStatusColor(order.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    {formatPrice(order.total)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-      </Paper>
-    </Container>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Orders</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-gray-600">Order ID</th>
+                    <th className="text-left py-3 px-4 text-gray-600">Date</th>
+                    <th className="text-left py-3 px-4 text-gray-600">Status</th>
+                    <th className="text-right py-3 px-4 text-gray-600">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentOrders.map((order) => (
+                    <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-4 px-4">#{order.id}</td>
+                      <td className="py-4 px-4">{new Date(order.date).toLocaleDateString()}</td>
+                      <td className="py-4 px-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
+                            order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' : 
+                            'bg-gray-100 text-gray-800'}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-right">₹{order.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 

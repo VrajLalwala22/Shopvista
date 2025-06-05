@@ -40,21 +40,38 @@ const Home: React.FC = () => {
   return (
     <div className="w-full overflow-x-hidden">
       {/* Hero Section */}
-      <section className="w-full bg-primary py-16 sm:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Welcome to ShopVista
+      <section className="relative w-full py-20 sm:py-32 overflow-hidden">
+        {/* Background with gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80 mix-blend-multiply"></div>
+        
+        {/* Animated background patterns */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 animate-fade-in-up">
+              Welcome to{" "}
+              <span className="relative inline-block group">
+                ShopVista
+                <span className="absolute -bottom-2 left-0 w-full h-1 bg-white transform origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"></span>
+              </span>
             </h1>
-            <p className="mt-6 text-xl text-gray-100 max-w-2xl mx-auto">
+            <p className="mt-6 text-xl md:text-2xl text-gray-100 max-w-2xl mx-auto mb-12 animate-fade-in-up animation-delay-200">
               Discover our curated collection of quality products at great prices.
             </p>
-            <div className="mt-10">
+            <div className="flex justify-center space-x-4 animate-fade-in-up animation-delay-400">
               <Link
                 to="/products"
-                className="inline-flex items-center px-6 py-3 text-base font-medium rounded-md text-primary bg-white hover:bg-gray-50 transition-colors duration-200"
+                className="inline-flex items-center px-8 py-4 text-lg font-medium rounded-full text-primary bg-white hover:bg-gray-50 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1"
               >
                 Shop Now
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
               </Link>
             </div>
           </div>
@@ -64,7 +81,7 @@ const Home: React.FC = () => {
       {/* Categories Section */}
       <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-accent sm:text-3xl mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl mb-8">
             Shop by Category
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,7 +127,7 @@ const Home: React.FC = () => {
       {/* Featured Products Section */}
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-accent sm:text-3xl mb-8">
+          <h2 className="text-2xl font-bold text-black sm:text-3xl mb-8">
             Featured Products
           </h2>
           {loading ? (
@@ -135,14 +152,14 @@ const Home: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-lg font-medium text-accent group-hover:text-primary transition-colors line-clamp-1">
+                    <h3 className="text-lg font-medium text-black group-hover:text-primary transition-colors line-clamp-1">
                       {product.title}
                     </h3>
                     <p className="mt-2 text-sm text-gray-500 line-clamp-2">
                       {product.description}
                     </p>
                     <div className="mt-4 flex items-center justify-between">
-                      <span className="text-lg font-medium text-accent">₹{Math.round(product.price)}</span>
+                      <span className="text-lg font-medium text-black">₹{Math.round(product.price)}</span>
                       <button 
                         onClick={(e) => handleAddToCart(e, product)}
                         className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-colors"

@@ -57,7 +57,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-secondary p-8 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-semibold text-accent mb-6 text-center">Login to ShopVista</h1>
+        <h1 className="text-2xl font-semibold mb-6 text-center">
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Login to ShopVista</span>
+        </h1>
         
         {error && (
           <div className="bg-red-100 text-red-600 p-4 rounded-md mb-4">

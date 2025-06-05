@@ -8,19 +8,48 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1e4a3b',
-          light: '#2a5c4a',
-          dark: '#123828',
+          DEFAULT: '#1B4332',
+          light: '#2D6A4F',
+          dark: '#081C15'
         },
         secondary: {
-          DEFAULT: '#ffffff',
-          dark: '#f3f4f6',
+          DEFAULT: '#FFFFFF',
+          dark: '#F8F9FA'
         },
         accent: {
-          DEFAULT: '#1e2a3b',
-          light: '#2a3b50',
-          dark: '#0f1524',
+          DEFAULT: '#40916C',
+          light: '#52B788'
         }
+      },
+      keyframes: {
+        blob: {
+          '0%': {
+            transform: 'translate(0px, 0px) scale(1)',
+          },
+          '33%': {
+            transform: 'translate(30px, -50px) scale(1.1)',
+          },
+          '66%': {
+            transform: 'translate(-20px, 20px) scale(0.9)',
+          },
+          '100%': {
+            transform: 'translate(0px, 0px) scale(1)',
+          },
+        },
+        'fade-in-up': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(20px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        }
+      },
+      animation: {
+        blob: 'blob 7s infinite',
+        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
       },
     },
   },

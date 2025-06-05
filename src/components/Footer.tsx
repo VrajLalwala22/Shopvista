@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
       <div className="max-w-[1200px] mx-auto px-4 py-8 sm:py-12">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 sm:col-span-1">
-            <h3 className="text-lg font-semibold text-accent mb-4">ShopVista</h3>
+            <h3 className="text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">ShopVista</h3>
             <p className="text-gray-500 text-sm">
               Your one-stop shop for quality products at great prices.
             </p>
