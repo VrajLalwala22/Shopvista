@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { findRegisteredUser } from '../services/auth'
+import { validateCredentials } from '../services/auth'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -27,8 +27,8 @@ const Login = () => {
     setLoading(true)
 
     try {
-      // Find user with matching credentials
-      const user = findRegisteredUser(formData.username, formData.password)
+      // Validate credentials
+      const user = validateCredentials(formData.username, formData.password)
 
       if (!user) {
         throw new Error('Invalid username or password')
@@ -42,17 +42,13 @@ const Login = () => {
       
       // Log the user in using the auth context
       login({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        ...user,
         token
       })
 
       navigate('/')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed. Please register if you haven\'t already.')
+      setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -111,9 +107,11 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-accent text-center">
-          Don't have an account? <Link to="/register" className="text-primary hover:text-primary-light hover:underline">Sign up</Link>
-        </p>
+        <div className="mt-4 text-sm text-accent text-center">
+          <p>Use these credentials to login:</p>
+          <p className="font-mono mt-1">Username: admin</p>
+          <p className="font-mono">Password: admin123</p>
+        </div>
       </div>
     </div>
   )

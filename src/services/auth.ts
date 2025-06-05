@@ -1,31 +1,25 @@
-interface RegisteredUser {
+// Static credentials for login
+const STATIC_USER = {
+  id: 1,
+  username: 'admin',
+  password: 'admin123',
+  email: 'admin@example.com',
+  firstName: 'Admin',
+  lastName: 'User'
+};
+
+export interface User {
   id: number;
   username: string;
-  password: string;
   email: string;
   firstName: string;
   lastName: string;
 }
 
-const REGISTERED_USERS_KEY = 'registered_users';
-
-export const getRegisteredUsers = (): RegisteredUser[] => {
-  const users = localStorage.getItem(REGISTERED_USERS_KEY);
-  return users ? JSON.parse(users) : [];
-};
-
-export const addRegisteredUser = (user: RegisteredUser): void => {
-  const users = getRegisteredUsers();
-  users.push(user);
-  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
-};
-
-export const findRegisteredUser = (username: string, password: string): RegisteredUser | undefined => {
-  const users = getRegisteredUsers();
-  return users.find(user => user.username === username && user.password === password);
-};
-
-export const isUsernameTaken = (username: string): boolean => {
-  const users = getRegisteredUsers();
-  return users.some(user => user.username === username);
+export const validateCredentials = (username: string, password: string): User | null => {
+  if (username === STATIC_USER.username && password === STATIC_USER.password) {
+    const { password: _, ...userWithoutPassword } = STATIC_USER;
+    return userWithoutPassword;
+  }
+  return null;
 }; 
