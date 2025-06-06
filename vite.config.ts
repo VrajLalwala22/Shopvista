@@ -15,7 +15,7 @@ export default defineConfig({
       }
     })
   ],
-  base: './',
+  base: '/',
   server: {
     port: 3000,
     host: true
@@ -24,25 +24,12 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
-    commonjsOptions: {
-      transformMixedEsModules: true,
-      include: [
-        /node_modules/
-      ]
-    },
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@emotion')) {
-              return 'emotion'
-            }
-            if (id.includes('@mui')) {
-              return 'mui'
-            }
-            return 'vendor'
-          }
-        }
+        format: 'es',
+        entryFileNames: 'assets/[name].[hash].mjs',
+        chunkFileNames: 'assets/[name].[hash].mjs',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       }
     }
   },
@@ -60,10 +47,7 @@ export default defineConfig({
       '@emotion/styled',
       '@mui/material',
       '@mui/icons-material'
-    ],
-    esbuildOptions: {
-      target: 'es2020'
-    }
+    ]
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
