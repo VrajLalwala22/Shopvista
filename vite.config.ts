@@ -24,37 +24,49 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
-    chunkSizeWarningLimit: 1600,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+      include: [
+        /node_modules/
+      ]
+    },
     rollupOptions: {
-      external: ['hoist-non-react-statics'],
+      external: ['react', 'react-dom'],
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@mui/icons-material'],
-          emotion: ['@emotion/react', '@emotion/styled']
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        },
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@emotion')) {
+              return 'emotion'
+            }
+            if (id.includes('@mui')) {
+              return 'mui'
+            }
+            return 'vendor'
+          }
         }
       }
-    },
-    commonjsOptions: {
-      include: []
     }
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'hoist-non-react-statics': 'hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js'
-    },
+      'react': 'react',
+      'react-dom': 'react-dom'
+    }
   },
   optimizeDeps: {
     include: [
-      'react', 
-      'react-dom', 
+      'react',
+      'react-dom',
       'react-router-dom',
       '@emotion/react',
       '@emotion/styled',
       '@mui/material',
-      '@mui/icons-material',
-      'hoist-non-react-statics'
+      '@mui/icons-material'
     ],
     esbuildOptions: {
       target: 'es2020'
