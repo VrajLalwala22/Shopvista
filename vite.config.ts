@@ -15,9 +15,9 @@ export default defineConfig({
       }
     })
   ],
+  base: './',
   server: {
     port: 3000,
-    open: true,
     host: true
   },
   build: {
@@ -31,12 +31,7 @@ export default defineConfig({
       ]
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
       output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM'
-        },
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('@emotion')) {
@@ -53,9 +48,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'react': 'react',
-      'react-dom': 'react-dom'
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   optimizeDeps: {
