@@ -16,6 +16,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "allowJs": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["vite/client"]
   },

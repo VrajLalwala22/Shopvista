@@ -6,7 +6,6 @@ import { dirname } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -16,7 +15,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
     minify: 'terser',
     chunkSizeWarningLimit: 1600,
     rollupOptions: {
