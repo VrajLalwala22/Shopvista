@@ -26,13 +26,14 @@ export default defineConfig({
     minify: 'terser',
     chunkSizeWarningLimit: 1600,
     rollupOptions: {
+      external: ['hoist-non-react-statics'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           mui: ['@mui/material', '@mui/icons-material'],
           emotion: ['@emotion/react', '@emotion/styled']
-        },
-      },
+        }
+      }
     },
     commonjsOptions: {
       include: []
@@ -41,6 +42,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'hoist-non-react-statics': 'hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js'
     },
   },
   optimizeDeps: {
@@ -51,7 +53,8 @@ export default defineConfig({
       '@emotion/react',
       '@emotion/styled',
       '@mui/material',
-      '@mui/icons-material'
+      '@mui/icons-material',
+      'hoist-non-react-statics'
     ],
     esbuildOptions: {
       target: 'es2020'
