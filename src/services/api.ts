@@ -29,41 +29,34 @@ interface RegisterResponse {
   token: string;
 }
 
-const BASE_URL = 'https://dummyjson.com';
+const BASE_URL = 'https://dummyjson.com'
 
+export const api = {
+  async getProducts() {
+    const response = await fetch(`${BASE_URL}/products`)
+    return response.json()
+  },
 
-export const getProducts = async (): Promise<{ products: Product[] }> => {
-  const res = await fetch(`${BASE_URL}/products`);
-  if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json();
-};
+  async getProduct(id: string) {
+    const response = await fetch(`${BASE_URL}/products/${id}`)
+    return response.json()
+  },
 
+  async searchProducts(query: string) {
+    const response = await fetch(`${BASE_URL}/products/search?q=${query}`)
+    return response.json()
+  },
 
-export const getProductById = async (id: number): Promise<Product> => {
-  try {
-    const response = await fetch(`${BASE_URL}/products/${id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch product');
-    }
-    return await response.json();
-  } catch (error) {
-    throw new Error('Failed to fetch product');
+  async getCategories() {
+    const response = await fetch(`${BASE_URL}/products/categories`)
+    return response.json()
+  },
+
+  async getProductsByCategory(category: string) {
+    const response = await fetch(`${BASE_URL}/products/category/${category}`)
+    return response.json()
   }
-};
-
-
-export const searchProducts = async (query: string): Promise<{ products: Product[] }> => {
-  const res = await fetch(`${BASE_URL}/products/search?q=${encodeURIComponent(query)}`);
-  if (!res.ok) throw new Error('Failed to search products');
-  return res.json();
-};
-
-
-export const getProductsByCategory = async (category: string): Promise<{ products: Product[] }> => {
-  const res = await fetch(`${BASE_URL}/products/category/${encodeURIComponent(category)}`);
-  if (!res.ok) throw new Error(`Failed to fetch products in category ${category}`);
-  return res.json();
-};
+}
 
 export const loginUser = async (username: string, password: string): Promise<LoginResponse> => {
   const res = await fetch(`${BASE_URL}/auth/login`, {

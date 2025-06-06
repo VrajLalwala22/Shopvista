@@ -6,9 +6,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
-  token: string;
-  phone?: string;
-  location?: string;
+  [key: string]: any;
 }
 
 interface AuthContextType {

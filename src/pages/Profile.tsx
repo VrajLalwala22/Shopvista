@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   ShoppingBagIcon,
@@ -10,8 +10,42 @@ import {
   CheckIcon,
   EnvelopeIcon,
   PhoneIcon,
-  MapPinIcon
+  MapPinIcon,
+  UserIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
+
+interface Order {
+  id: string;
+  date: string;
+  total: number;
+  status: 'pending' | 'delivered' | 'processing';
+  items: number;
+}
+
+const mockOrders: Order[] = [
+  {
+    id: 'ORD001',
+    date: '2024-03-15',
+    total: 2499,
+    status: 'delivered',
+    items: 3
+  },
+  {
+    id: 'ORD002',
+    date: '2024-03-10',
+    total: 1899,
+    status: 'processing',
+    items: 2
+  },
+  {
+    id: 'ORD003',
+    date: '2024-03-05',
+    total: 3299,
+    status: 'pending',
+    items: 4
+  }
+];
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -22,12 +56,6 @@ const Profile: React.FC = () => {
     phone: '',
     location: '',
   });
-
-  const recentOrders = [
-    { id: 1, date: '2024-03-15', status: 'Delivered', total: 299 },
-    { id: 2, date: '2024-03-10', status: 'In Transit', total: 149 },
-    { id: 3, date: '2024-03-05', status: 'Delivered', total: 199 },
-  ];
 
   const stats = [
     { label: 'Orders', value: 12, icon: <ShoppingBagIcon className="w-6 h-6" /> },
@@ -70,17 +98,29 @@ const Profile: React.FC = () => {
   };
 
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Login</h1>
+          <Link
+            to="/login"
+            className="inline-block bg-primary text-white px-6 py-3 rounded-md hover:bg-primary-dark transition-colors"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section with animated background */}
-      <section className="relative w-full py-20 overflow-hidden">
-        {/* Background with gradient overlay */}
+      
+      <section className="relative py-16 sm:py-24">
+       
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80 mix-blend-multiply"></div>
         
-        {/* Animated background patterns */}
+        
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
@@ -88,160 +128,159 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="relative container mx-auto px-4">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-32 h-32 rounded-full bg-white shadow-xl mb-6 flex items-center justify-center text-primary text-4xl font-bold">
-              {user.firstName[0]}{user.lastName[0]}
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="mb-6">
+              <div className="w-24 h-24 rounded-full bg-white p-1 mx-auto">
+                <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                  <UserIcon className="w-12 h-12 text-gray-600" />
+                </div>
+              </div>
             </div>
-            <h1 className="text-4xl font-bold text-white mb-2">{user.firstName} {user.lastName}</h1>
-            <p className="text-gray-100 text-lg">@{user.username}</p>
+            <h1 className="text-4xl font-bold text-white mb-4">{user.firstName} {user.lastName}</h1>
+            <p className="text-lg text-gray-100">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="relative -mt-8">
+      
+      <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200"
+                className="bg-white rounded-lg shadow-sm p-6"
               >
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
                   <div className="p-3 bg-primary/10 rounded-full">
                     <div className="text-primary">
                       {stat.icon}
                     </div>
                   </div>
-                  <span className="text-3xl font-bold text-gray-900">{stat.value}</span>
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-500">{stat.label}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  </div>
                 </div>
-                <h3 className="text-gray-600 font-medium">{stat.label}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Profile Information Section */}
-      <section className="py-12">
+      
+      <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
-              <button
-                onClick={handleEditToggle}
-                className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-              >
-                {editMode ? (
-                  <>
-                    <XMarkIcon className="w-5 h-5 mr-2" />
-                    Cancel
-                  </>
-                ) : (
-                  <>
-                    <PencilIcon className="w-5 h-5 mr-2" />
-                    Edit Profile
-                  </>
-                )}
-              </button>
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-4">Contact Information</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
                       <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                      <span className="ml-2 text-gray-900">{user.email}</span>
                     </div>
-                    <input
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                      disabled={!editMode}
-                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="flex items-center">
                       <PhoneIcon className="h-5 w-5 text-gray-400" />
+                      <span className="ml-2 text-gray-900">{user.phone}</span>
                     </div>
-                    <input
-                      type="tel"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                      disabled={!editMode}
-                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
-                    />
                   </div>
                 </div>
-
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Location</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MapPinIcon className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      value={profileData.location}
-                      onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-                      disabled={!editMode}
-                      className="pl-10 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
-                    />
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-4">Shipping Address</h3>
+                  <div className="space-y-2">
+                    <p className="text-gray-900">{user.location}</p>
                   </div>
                 </div>
               </div>
-
-              {editMode && (
-                <div className="flex justify-end mt-6">
-                  <button
-                    onClick={handleSave}
-                    className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-                  >
-                    <CheckIcon className="w-5 h-5 mr-2" />
-                    Save Changes
-                  </button>
-                </div>
-              )}
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={handleEditToggle}
+                  className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors"
+                >
+                  {editMode ? (
+                    <>
+                      <XMarkIcon className="w-5 h-5 mr-2" />
+                      Cancel
+                    </>
+                  ) : (
+                    <>
+                      <PencilIcon className="w-5 h-5 mr-2" />
+                      Edit Profile
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Recent Orders Section */}
-      <section className="py-12 bg-gray-50">
+      
+      <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Orders</h2>
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-gray-600">Order ID</th>
-                    <th className="text-left py-3 px-4 text-gray-600">Date</th>
-                    <th className="text-left py-3 px-4 text-gray-600">Status</th>
-                    <th className="text-right py-3 px-4 text-gray-600">Total</th>
+                  <tr className="text-left bg-gray-50">
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Order ID
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Items
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-4 px-4">#{order.id}</td>
-                      <td className="py-4 px-4">{new Date(order.date).toLocaleDateString()}</td>
-                      <td className="py-4 px-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                          ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
-                            order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' : 
-                            'bg-gray-100 text-gray-800'}`}>
-                          {order.status}
+                <tbody className="divide-y divide-gray-200">
+                  {mockOrders.map((order) => (
+                    <tr key={order.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link
+                          to={`/orders/${order.id}`}
+                          className="text-primary hover:text-primary-dark"
+                        >
+                          #{order.id}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                        {new Date(order.date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                        {order.items} items
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                        ₹{order.total}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            order.status === 'delivered'
+                              ? 'bg-green-100 text-green-800'
+                              : order.status === 'processing'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-right">₹{order.total}</td>
                     </tr>
                   ))}
                 </tbody>

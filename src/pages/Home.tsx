@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
-import { Product } from '../types/Product'
-import { categories } from '../types/Category'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
+import { categories } from '../types/Category'
+
+interface Product {
+  id: number
+  title: string
+  description: string
+  price: number
+  rating: number
+  thumbnail: string
+}
 
 const Home: React.FC = () => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const { addToCart } = useCart()
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
         const response = await fetch('https://dummyjson.com/products?limit=3')
         const data = await response.json()
-        const formattedProducts: Product[] = data.products.map((p: any) => ({
-          ...p,
-          createdAt: new Date().toISOString(),
-          images: p.images || [],
-          stock: p.stock || 0
-        }))
-        setFeaturedProducts(formattedProducts)
+        setFeaturedProducts(data.products)
       } catch (error) {
-        console.error('Failed to fetch featured products:', error)
+        console.error('Error fetching featured products:', error)
       } finally {
         setLoading(false)
       }
@@ -32,26 +32,18 @@ const Home: React.FC = () => {
     fetchFeaturedProducts()
   }, [])
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault() 
-    addToCart(product, 1)
-  }
-
   return (
     <div className="w-full overflow-x-hidden">
-      {/* Hero Section */}
       <section className="relative w-full py-20 sm:py-32 overflow-hidden">
-        {/* Background with gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80 mix-blend-multiply"></div>
         
-        {/* Animated background patterns */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
         </div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 animate-fade-in-up">
               Welcome to{" "}
@@ -78,7 +70,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
       <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl mb-8">
@@ -124,7 +115,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-black sm:text-3xl mb-8">
@@ -151,21 +141,22 @@ const Home: React.FC = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-medium text-black group-hover:text-primary transition-colors line-clamp-1">
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {product.title}
                     </h3>
-                    <p className="mt-2 text-sm text-gray-500 line-clamp-2">
+                    <p className="text-sm text-gray-500 mb-2 line-clamp-2">
                       {product.description}
                     </p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <span className="text-lg font-medium text-black">₹{Math.round(product.price)}</span>
-                      <button 
-                        onClick={(e) => handleAddToCart(e, product)}
-                        className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-colors"
-                      >
-                        Add to Cart
-                      </button>
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-bold text-primary">
+                        ₹{Math.round(product.price)}
+                      </p>
+                      <div className="flex items-center">
+                        <span className="text-sm text-gray-600">
+                          {product.rating.toFixed(1)} ★
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </Link>

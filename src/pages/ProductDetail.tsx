@@ -3,16 +3,31 @@ import { useParams } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { HeartIcon } from '@heroicons/react/24/outline'
-import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
-import { Product } from '../types/Product'
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
+import { StarIcon } from '@heroicons/react/24/solid'
+
+interface Product {
+  id: number
+  title: string
+  description: string
+  price: number
+  rating: number
+  stock: number
+  brand: string
+  category: string
+  thumbnail: string
+  images: string[]
+  createdAt: string
+}
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0)
   const { addToCart } = useCart()
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
-  const [product, setProduct] = useState<Product | null>(null)
-  const [selectedImage, setSelectedImage] = useState<string>('')
-  const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -21,30 +36,30 @@ const ProductDetail: React.FC = () => {
         const data = await response.json()
         setProduct({
           ...data,
-          createdAt: new Date().toISOString() // Since the API doesn't provide this
+          createdAt: new Date().toISOString()
         })
-        setSelectedImage(data.thumbnail)
       } catch (error) {
         console.error('Error fetching product:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchProduct()
   }, [id])
 
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setQuantity(parseInt(e.target.value))
   }
 
   const handleAddToCart = () => {
-    addToCart(product, quantity)
+    if (product) {
+      addToCart(product, quantity)
+    }
   }
 
-  const handleWishlistToggle = () => {
+  const toggleWishlist = () => {
+    if (!product) return
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id)
     } else {
@@ -52,117 +67,134 @@ const ProductDetail: React.FC = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Product not found</h1>
+          <p className="mt-2 text-gray-600">The product you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-       
         <div className="space-y-4">
-          <div className="relative rounded-lg overflow-hidden bg-gray-100">
-            <div className="relative pt-[100%]">
-              <img
-                src={selectedImage}
-                alt={product.title}
-                className="absolute inset-0 w-full h-full object-contain p-4"
-              />
-            </div>
+          <div className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden">
+            <img
+              src={product.images[selectedImage]}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-4">
             {product.images.map((image, index) => (
               <button
                 key={index}
-                onClick={() => setSelectedImage(image)}
-                className={`relative overflow-hidden rounded-lg bg-gray-100 ${
-                  selectedImage === image ? 'ring-2 ring-primary' : ''
+                onClick={() => setSelectedImage(index)}
+                className={`aspect-w-1 aspect-h-1 rounded-lg overflow-hidden border-2 ${
+                  selectedImage === index ? 'border-primary' : 'border-transparent'
                 }`}
               >
-                <div className="relative pt-[100%]">
-                  <img
-                    src={image}
-                    alt={`${product.title} ${index + 1}`}
-                    className="absolute inset-0 w-full h-full object-contain p-2"
-                    loading="lazy"
-                  />
-                </div>
+                <img
+                  src={image}
+                  alt={`${product.title} - View ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>
         </div>
 
-        
         <div className="space-y-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-              <p className="text-lg text-gray-500">{product.brand}</p>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{product.title}</h1>
+            <p className="mt-2 text-sm text-gray-500">{product.brand}</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              {[0, 1, 2, 3, 4].map((rating) => (
+                <StarIcon
+                  key={rating}
+                  className={`h-5 w-5 ${
+                    rating < Math.floor(product.rating)
+                      ? 'text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                  aria-hidden="true"
+                />
+              ))}
             </div>
+            <p className="text-sm text-gray-600">{product.rating.toFixed(1)} out of 5</p>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-medium text-gray-900">Description</h2>
+            <p className="mt-2 text-gray-600">{product.description}</p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <p className="text-3xl font-bold text-primary">₹{Math.round(product.price)}</p>
             <button
-              onClick={handleWishlistToggle}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+              onClick={toggleWishlist}
+              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+              aria-label={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
             >
               {isInWishlist(product.id) ? (
-                <HeartSolidIcon className="h-6 w-6 text-red-500" />
+                <HeartIconSolid className="h-6 w-6 text-red-500" />
               ) : (
-                <HeartIcon className="h-6 w-6 text-gray-400 hover:text-red-500" />
+                <HeartIcon className="h-6 w-6" />
               )}
             </button>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-4xl font-bold text-primary">₹{Math.round(product.price)}</p>
-            <p className="text-sm text-gray-500">
-              Stock: {product.stock} units available
-            </p>
-          </div>
-
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Description</h2>
-            <p className="text-gray-600">{product.description}</p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <label htmlFor="quantity" className="text-gray-700">
-                Quantity:
+            <div>
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                Quantity
               </label>
-              <div className="flex items-center border rounded">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-1 hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <span className="px-3 py-1">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  className="px-3 py-1 hover:bg-gray-100"
-                >
-                  +
-                </button>
-              </div>
+              <select
+                id="quantity"
+                value={quantity}
+                onChange={handleQuantityChange}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md"
+              >
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <button
               onClick={handleAddToCart}
-              className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors"
-              disabled={product.stock === 0}
+              className="w-full bg-primary text-white px-6 py-3 rounded-md hover:bg-primary-dark transition-colors"
             >
-              {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              Add to Cart
             </button>
           </div>
 
-          <div className="border-t pt-6">
-            <h2 className="text-lg font-semibold mb-2">Product Details</h2>
-            <dl className="space-y-2">
-              <div className="flex">
-                <dt className="w-24 text-gray-500">Category:</dt>
-                <dd className="text-gray-900">{product.category}</dd>
-              </div>
-              <div className="flex">
-                <dt className="w-24 text-gray-500">Brand:</dt>
-                <dd className="text-gray-900">{product.brand}</dd>
-              </div>
-            </dl>
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <span>Category:</span>
+              <span className="font-medium">{product.category}</span>
+            </div>
+            <div className="mt-2 flex items-center space-x-2 text-sm text-gray-600">
+              <span>Stock:</span>
+              <span className="font-medium">{product.stock} units</span>
+            </div>
           </div>
         </div>
       </div>
