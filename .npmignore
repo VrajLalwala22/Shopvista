@@ -1,0 +1,10 @@
+# Include everything needed for build
+!dist/
+!src/
+!public/
+!index.html
+!package.json
+!vite.config.ts
+!tsconfig.json
+!postcss.config.js
+!tailwind.config.js 
