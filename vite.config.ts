@@ -16,7 +16,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: true,
     minify: 'terser',
     chunkSizeWarningLimit: 1600,
     rollupOptions: {
@@ -26,6 +26,9 @@ export default defineConfig({
         },
       },
     },
+    commonjsOptions: {
+      include: []
+    }
   },
   resolve: {
     alias: {
@@ -34,5 +37,11 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  }
 }) 
