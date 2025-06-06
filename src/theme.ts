@@ -14,18 +14,20 @@ const theme = createTheme({
   components: {
     MuiContainer: {
       styleOverrides: {
-        root: {
-          paddingLeft: {
-            xs: 16,
-            sm: 24,
-            md: 32,
+        root: ({ theme }) => ({
+          [theme.breakpoints.down('sm')]: {
+            paddingLeft: 16,
+            paddingRight: 16,
           },
-          paddingRight: {
-            xs: 16,
-            sm: 24,
-            md: 32,
+          [theme.breakpoints.between('sm', 'md')]: {
+            paddingLeft: 24,
+            paddingRight: 24,
           },
-        },
+          [theme.breakpoints.up('md')]: {
+            paddingLeft: 32,
+            paddingRight: 32,
+          },
+        }),
       },
     },
     MuiPaper: {

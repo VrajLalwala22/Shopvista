@@ -7,7 +7,14 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: ['@emotion/babel-plugin']
+      }
+    })
+  ],
   server: {
     port: 3000,
     open: true,
@@ -22,6 +29,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
+          mui: ['@mui/material', '@mui/icons-material'],
+          emotion: ['@emotion/react', '@emotion/styled']
         },
       },
     },
@@ -35,7 +44,15 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@emotion/react',
+      '@emotion/styled',
+      '@mui/material',
+      '@mui/icons-material'
+    ],
     esbuildOptions: {
       target: 'es2020'
     }
