@@ -1,4 +1,3 @@
-# Include everything needed for build
 !dist/
 !src/
 !public/
